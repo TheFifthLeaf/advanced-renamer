@@ -50,33 +50,33 @@ For "remove" and "add":
 
 ```bash
 # Right: -r
-add "D:\Wideo" -r "-2021"
-remove "D:\Wideo" -r 5
+add "D:\Video" -r "-2021"
+remove "D:\Video" -r 5
 
 # Left: -l
-add "D:\Wideo" -l "april_"
-remove "D:\Wideo" -l 6
+add "D:\Video" -l "april_"
+remove "D:\Video" -l 6
 
 # Both: -b
-add "D:\Wideo" -b "--"
-remove "D:\Wideo" -b 2
+add "D:\Video" -b "--"
+remove "D:\Video" -b 2
 
 # Positional: -p
-add "D:\Wideo" -p "_office_" 7
-remove "D:\Wideo" -p 8 7
+add "D:\Video" -p "_office_" 7
+remove "D:\Video" -p 8 7
 ```
 
 For "replace":
 
 ```bash
 # All matches: -a
-replace "D:\Wideo" -a "2020" "2021"
+replace "D:\Video" -a "2020" "2021"
 
 # First match: -f
-replace "D:\Wideo" -f "." "-"
+replace "D:\Video" -f "." "-"
 
 # Last match: -l
-replace "D:\Wideo" -f "-" "."
+replace "D:\Video" -f "-" "."
 ```
 
 ## Contributing
