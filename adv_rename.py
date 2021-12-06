@@ -1,6 +1,8 @@
 import os
 import sys
 
+import operations as opr
+
 
 def input_slice(inp):
     # Slice elements from input
@@ -25,103 +27,6 @@ def input_slice(inp):
         new_inp[x] = new_inp[x].replace('?', ' ')
 
     return new_inp
-
-
-def separate(fls):
-    # Separate names and extansions
-
-    nm, ext = [], []
-
-    for x in fls:
-        nm.append(x[:x.rindex('.')])
-        ext.append(x[x.rindex('.'):])
-
-    return nm, ext
-
-
-def join(new, ext):
-    # Combine names with extensions
-
-    fls = []
-
-    for x in range(len(new)):
-        fls.append(new[x] + ext[x])
-
-    return fls
-
-
-def rename(old, new):
-    # Changes names of files
-
-    for x in range(len(old)):
-        os.rename(old[x], new[x])
-
-
-def right(mode, old, chng):
-    # Removes or add characters from/to right
-
-    nm = []
-
-    if mode == 'remove':
-        for x in old:
-            nm.append(x[:len(x) - chng])
-    elif mode == 'add':
-        for x in old:
-            nm.append(x + chng)
-
-    return nm
-
-
-def left(mode, old, chng):
-    # Removes or add characters from/to left
-
-    nm = []
-
-    if mode == 'remove':
-        for x in old:
-            nm.append(x[chng:])
-    elif mode == 'add':
-        for x in old:
-            nm.append(chng + x)
-
-    return nm
-
-
-def position(mode, old, chng, pos):
-    # Removes or add characters at position
-
-    nm = []
-
-    if mode == 'remove':
-        for x in old:
-            nm.append(x[:pos] + x[pos + chng:])
-    elif mode == 'add':
-        for x in old:
-            nm.append(x[:pos] + chng + x[pos:])
-
-    return nm
-
-
-def replace(mode, old, bef, aft):
-    # Replace one string to another
-
-    nm = []
-
-    if mode == '-a':
-        for x in old:
-            nm.append(x.replace(bef, aft))
-    elif mode == '-f':
-        for x in old:
-            pos = x.find(bef)
-            tmp = x[pos:pos + len(aft)].replace(bef, aft)
-            nm.append(x[:pos] + tmp + x[pos + 1:])
-    elif mode == '-l':
-        for x in old:
-            pos = x.rfind(bef)
-            tmp = x[pos:pos + len(aft)].replace(bef, aft)
-            nm.append(x[:pos] + tmp + x[pos + 1:])
-
-    return nm
 
 
 def main():
@@ -156,7 +61,7 @@ def main():
             print('There are no files in the path')
             main()
 
-        nm_old, extensions = separate(files_old)
+        nm_old, extensions = opr.separate(files_old)
 
         if command == 'remove':
             try:
@@ -186,11 +91,11 @@ def main():
                 main()
 
         if sub_command == '-r':
-            nm_new = right(command, nm_old, change)
+            nm_new = opr.right(command, nm_old, change)
         elif sub_command == '-l':
-            nm_new = left(command, nm_old, change)
+            nm_new = opr.left(command, nm_old, change)
         elif sub_command == '-b':
-            nm_new = left(command, right(command, nm_old, change), change)
+            nm_new = opr.left(command, opr.right(command, nm_old, change), change)
         elif sub_command == '-p':
             try:
                 inner_position = int(float(inp[4]))
@@ -203,13 +108,13 @@ def main():
             except Exception:
                 print('The position number must be greater then or equal to zero')
                 main()
-            nm_new = position(command, nm_old, change, inner_position)
+            nm_new = opr.position(command, nm_old, change, inner_position)
         else:
             print('Undefined command')
 
-        files_new = join(nm_new, extensions)
+        files_new = opr.join(nm_new, extensions)
 
-        rename(files_old, files_new)
+        opr.rename(files_old, files_new)
 
     elif command == 'replace':
 
@@ -250,16 +155,16 @@ def main():
             print('There are no files in the path')
             main()
 
-        nm_old, extensions = separate(files_old)
+        nm_old, extensions = opr.separate(files_old)
 
         if sub_command in ('-a', '-f', '-l'):
-            nm_new = replace(sub_command, nm_old, before, after)
+            nm_new = opr.replace(sub_command, nm_old, before, after)
         else:
             print('Undefined command')
 
-        files_new = join(nm_new, extensions)
+        files_new = opr.join(nm_new, extensions)
 
-        rename(files_old, files_new)
+        opr.rename(files_old, files_new)
 
     elif command == 'help':
 
