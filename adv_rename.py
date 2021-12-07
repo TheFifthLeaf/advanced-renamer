@@ -115,167 +115,45 @@ def parser():
 
 
 def main(command, path, mode, arguments):
+    """The main function of the program that control and performs all the actions."""
 
-    if command in ('add', 'rm'):
+    path = os.path.normpath(path)
+    path = os.path.abspath(path)
 
-        try:
-            os.chdir(path)
-        except FileNotFoundError:
-            print('Invalid path')
-            main()
+    if os.path.exists(path) is False:
+        sys.exit("Entered path does not exists")
 
-        try:
-            files_old = list(os.walk(path))[0][2]
-            if len(files_old) == 0:
-                raise Exception
-        except Exception:
-            print('There are no files in the path')
-            main()
+    if os.path.isfile(path):
+        path_files = [path]
+    elif os.path.isdir(path):
+        path_files = list(os.walk(path))[0][2]
 
-        nm_old, extensions = opr.separate(files_old)
+    if len(path_files) <= 0:
+        sys.exit("No files in the path")
 
-        if command == 'remove':
-            try:
-                change = int(float(inp[3]))
-            except IndexError:
-                print('Insufficient number of parameters')
-                main()
-            try:
-                if change <= 0:
-                    raise Exception
-            except Exception:
-                print('The remove number must be greater then zero')
-                main()
-        elif command == 'add':
-            try:
-                change = inp[3]
-            except IndexError:
-                print('Insufficient number of parameters')
-                main()
-            try:
-                chars = ['*', ':', '<', '>', '?', '/', '\\', '|', '\"']
-                for x in chars:
-                    if x in change:
-                        raise Exception
-            except Exception:
-                print('Invalid characters entered')
-                main()
+    files = [path_file.replace(path_file, path + "\\" + path_file) for path_file in path_files]
+    files_names = [os.path.splitext(path_file)[0] for path_file in path_files]
+    files_extensions = [os.path.splitext(path_file)[1] for path_file in path_files]
 
-        if mode == '-r':
-            nm_new = opr.right(command, nm_old, change)
-        elif mode == '-l':
-            nm_new = opr.left(command, nm_old, change)
-        elif mode == '-b':
-            nm_new = opr.left(command, opr.right(command, nm_old, change), change)
-        elif mode == '-p':
-            try:
-                inner_position = int(float(inp[4]))
-            except IndexError:
-                print('Insufficient number of parameters')
-                main()
-            try:
-                if inner_position < 0:
-                    raise Exception
-            except Exception:
-                print('The position number must be greater then or equal to zero')
-                main()
-            nm_new = opr.position(command, nm_old, change, inner_position)
-        else:
-            print('Undefined command')
+    if command in ("add", "rm"):
 
-        files_new = opr.join(nm_new, extensions)
+        if mode == "R":
+            new_names = opr.right(command, files_names, arguments[0])
+        elif mode == "L":
+            new_names = opr.left(command, files_names, arguments[0])
+        elif mode == "B":
+            new_names = opr.left(command, opr.right(command, files_names, arguments[0]), arguments[0])
+        elif mode == "P":
+            new_names = opr.position(command, files_names, arguments[0], arguments[1])
 
-        opr.rename(files_old, files_new)
+    elif command == "replace":
 
-    elif command == 'replace':
+        new_names = opr.replace(mode, files_names, *arguments)
 
-        try:
-            path, mode, before, after = inp[1], inp[2], inp[3], inp[4]
-        except IndexError:
-            print('Insufficient number of parameters')
-            main()
+    new_files = opr.join(new_names, files_extensions)
+    new_files = [new_file.replace(new_file, path + "\\" + new_file) for new_file in new_files]
 
-        try:
-            chars = ['*', ':', '<', '>', '?', '/', '\\', '|', '\"']
-            for x in chars:
-                if x in before:
-                    raise Exception
-        except Exception:
-            print('Invalid characters entered')
-            main()
-        try:
-            chars = ['*', ':', '<', '>', '?', '/', '\\', '|', '\"']
-            for x in chars:
-                if x in after:
-                    raise Exception
-        except Exception:
-            print('Invalid characters entered')
-            main()
-
-        try:
-            os.chdir(path)
-        except FileNotFoundError:
-            print('Invalid path')
-            main()
-
-        try:
-            files_old = list(os.walk(path))[0][2]
-            if len(files_old) == 0:
-                raise Exception
-        except Exception:
-            print('There are no files in the path')
-            main()
-
-        nm_old, extensions = opr.separate(files_old)
-
-        if mode in ('-a', '-f', '-l'):
-            nm_new = opr.replace(mode, nm_old, before, after)
-        else:
-            print('Undefined command')
-
-        files_new = opr.join(nm_new, extensions)
-
-        opr.rename(files_old, files_new)
-
-    elif command == 'help':
-
-        print('''
-README
-
-Remove from:
-    right:  remove -files- -r -num_of_chars-
-    left:   remove -files- -l -num_of_chars-
-    both:   remove -files- -b- -num_of_chars-
-    posit:  remove -files- -p- -num_of_chars- -pos-
-    eg:     remove "D:\\Video" -p 6 8
-
-Add to:
-    right:  add -files- -r -txt-
-    left:   add -files- -l -txt-
-    both:   add -files- -b- -txt-
-    posit:  add -files- -p- -txt- -pos-
-    eg:     add "D:\\Video" -p "[2020]" 8
-
-Replace:
-    all:    replace -files- -a -old- -new-
-    first:  replace -files- -f -old- -new-
-    last:   replace -files- -l -old- -new-
-    eg:     replace "D:\\Video" -a "[2020]" "-2021-"
-
-To exit:
-    exit
-
-To display help:
-    help
-''')
-
-    elif command == 'exit':
-
-        sys.exit()
-
-    else:
-
-        print('Undefined command')
+    opr.rename(files, new_files)
 
 
 if __name__ == '__main__':
