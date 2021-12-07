@@ -1,51 +1,122 @@
 import os
 import sys
+import argparse as arps
 
 import operations as opr
 
 
-def input_slice(inp):
-    # Slice elements from input
+def parser():
+    """Parses given arguments"""
+    arg_parser = arps.ArgumentParser(
+        usage="adv-renamer [--help] {add,rm,replace}",
+        description="Advanced Renamer makes sorting a large number of files much easier.",
+        epilog="To see more information please use: adv-renamer <command> --help",
+    )
+    subparsers = arg_parser.add_subparsers(
+        dest="command"
+    )
+    add_parser = subparsers.add_parser(
+        "add",
+        usage="adv-renamer add [--help] [path mode arguments]",
+        description="Add given text to files names",
+        help="Add given text to files names",
+        epilog="Modes:\t\tArguments:\n"
+               "R (right)\ttext\n"
+               "L (left)\ttext\n"
+               "B (both)\ttext\n"
+               "P (position)\ttext number",
+        formatter_class=arps.RawTextHelpFormatter
+    )
+    add_parser.add_argument(
+        "path",
+        type=str,
+        metavar="path",
+        help="Directory of files to rename"
+    )
+    add_parser.add_argument(
+        "mode",
+        type=str,
+        choices=["R", "L", "B", "P"],
+        metavar="mode",
+        help="Script behaviour while adding"
+    )
+    add_parser.add_argument(
+        "arguments",
+        type=str,
+        nargs="+",
+        metavar="arguments",
+        help="Parameters required by the specified mode"
+    )
+    rm_parser = subparsers.add_parser(
+        "rm",
+        usage="adv-renamer rm [--help] [path mode arguments]",
+        description="Remove number of characters from files names",
+        help="Remove number of characters from files names",
+        epilog="Modes:\t\tArguments:\n"
+               "R (right)\ttext\n"
+               "L (left)\ttext\n"
+               "B (both)\ttext\n"
+               "P (position)\ttext number",
+        formatter_class=arps.RawTextHelpFormatter
+    )
+    rm_parser.add_argument(
+        "path",
+        type=str,
+        metavar="path",
+        help="Directory of files to rename"
+    )
+    rm_parser.add_argument(
+        "mode",
+        type=str,
+        choices=("R", "L", "B", "P"),
+        metavar="mode",
+        help="Script behaviour while removing"
+    )
+    rm_parser.add_argument(
+        "arguments",
+        type=str,
+        nargs="+",
+        metavar="arguments",
+        help="Parameters required by the specified mode"
+    )
+    replace_parser = subparsers.add_parser(
+        "replace",
+        usage="adv-renamer replace [--help] [path mode arguments]",
+        description="Replace old string with the new one in files names",
+        help="Replace old string with the new one in files names",
+        epilog="Modes:\t\tArguments:\n"
+               "F (first)\ttext_old text_new\n"
+               "L (last)\ttext_old text_new\n"
+               "A (all)\t\ttext_old text_new",
+        formatter_class=arps.RawTextHelpFormatter
+    )
+    replace_parser.add_argument(
+        "path",
+        type=str,
+        metavar="path",
+        help="Directory of files to rename"
+    )
+    replace_parser.add_argument(
+        "mode",
+        type=str,
+        choices=("F", "L", "A"),
+        metavar="mode",
+        help="Script behaviour while removing"
+    )
+    replace_parser.add_argument(
+        "arguments",
+        type=str,
+        nargs="+",
+        metavar="arguments",
+        help="Parameters required by the specified mode"
+    )
+    args = arg_parser.parse_args()
+    return (args.command, args.path, args.mode, args.arguments)
 
-    pos, new_inp, index = 0, inp, []
 
-    for x in inp:
-        if x == '"':
-            if len(index) == 0:
-                index.append(pos)
-            elif len(index) == 1:
-                index.append(pos)
-                old = inp[index[0] + 1:index[1]]
-                new = inp[index[0] + 1:index[1]].replace(' ', '?')
-                new_inp = inp.replace(old, new)
-                index = []
-        pos += 1
+def main(command, path, mode, arguments):
 
-    new_inp = new_inp.replace('"', '').split()
-
-    for x in range(len(new_inp)):
-        new_inp[x] = new_inp[x].replace('?', ' ')
-
-    return new_inp
-
-
-def main():
-
-    inp = input_slice(input('Enter command:'))
-
-    try:
-        command = inp[0]
-    except IndexError:
-        print('Please enter the command')
-        main()
-
-    if command in ('remove', 'add'):
-
-        try:
-            path, sub_command = inp[1], inp[2]
-        except IndexError:
-            print('Insufficient number of parameters')
-            main()
+    if command in ('add', 'rm'):
 
         try:
             os.chdir(path)
@@ -90,13 +161,13 @@ def main():
                 print('Invalid characters entered')
                 main()
 
-        if sub_command == '-r':
+        if mode == '-r':
             nm_new = opr.right(command, nm_old, change)
-        elif sub_command == '-l':
+        elif mode == '-l':
             nm_new = opr.left(command, nm_old, change)
-        elif sub_command == '-b':
+        elif mode == '-b':
             nm_new = opr.left(command, opr.right(command, nm_old, change), change)
-        elif sub_command == '-p':
+        elif mode == '-p':
             try:
                 inner_position = int(float(inp[4]))
             except IndexError:
@@ -119,7 +190,7 @@ def main():
     elif command == 'replace':
 
         try:
-            path, sub_command, before, after = inp[1], inp[2], inp[3], inp[4]
+            path, mode, before, after = inp[1], inp[2], inp[3], inp[4]
         except IndexError:
             print('Insufficient number of parameters')
             main()
@@ -157,8 +228,8 @@ def main():
 
         nm_old, extensions = opr.separate(files_old)
 
-        if sub_command in ('-a', '-f', '-l'):
-            nm_new = opr.replace(sub_command, nm_old, before, after)
+        if mode in ('-a', '-f', '-l'):
+            nm_new = opr.replace(mode, nm_old, before, after)
         else:
             print('Undefined command')
 
@@ -208,9 +279,9 @@ To display help:
 
 
 if __name__ == '__main__':
-    while True:
-        try:
-            main()
-        except Exception:
-            print('An unknown error has occurred:')
-            print(sys.exc_info())
+
+    try:
+        main(*parser())
+    except Exception:
+        print('An unknown error has occurred:')
+        print(sys.exc_info())
