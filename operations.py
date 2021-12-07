@@ -1,98 +1,45 @@
-import os
+def rename_right(command, files_names, change):
+    """Removes or add characters from/to right"""
+    if command == 'rm':
+        new_names = [name[:len(name) - int(change)] for name in files_names]
+    elif command == 'add':
+        new_names = [name + change for name in files_names]
+    return new_names
 
 
-def separate(fls):
-    # Separate names and extansions
-
-    nm, ext = [], []
-
-    for x in fls:
-        nm.append(x[:x.rindex('.')])
-        ext.append(x[x.rindex('.'):])
-
-    return nm, ext
+def rename_left(command, files_names, change):
+    """Removes or add characters from/to left"""
+    if command == 'rm':
+        new_names = [name[int(change):] for name in files_names]
+    elif command == 'add':
+        new_names = [change + name for name in files_names]
+    return new_names
 
 
-def join(new, ext):
-    # Combine names with extensions
-
-    fls = []
-
-    for x in range(len(new)):
-        fls.append(new[x] + ext[x])
-
-    return fls
-
-
-def rename(old, new):
-    # Changes names of files
-
-    for x in range(len(old)):
-        os.rename(old[x], new[x])
+def rename_position(command, files_names, change, position):
+    """Removes or add characters at position"""
+    if command == 'rm':
+        new_names = [name[:int(position)] + name[int(position) + int(change):]
+                     for name in files_names]
+    elif command == 'add':
+        new_names = [name[:int(position)] + change + name[int(position):]
+                     for name in files_names]
+    return new_names
 
 
-def right(mode, old, chng):
-    # Removes or add characters from/to right
-
-    nm = []
-
-    if mode == 'rm':
-        for x in old:
-            nm.append(x[:len(x) - int(chng)])
-    elif mode == 'add':
-        for x in old:
-            nm.append(x + chng)
-
-    return nm
-
-
-def left(mode, old, chng):
-    # Removes or add characters from/to left
-
-    nm = []
-
-    if mode == 'rm':
-        for x in old:
-            nm.append(x[int(chng):])
-    elif mode == 'add':
-        for x in old:
-            nm.append(chng + x)
-
-    return nm
-
-
-def position(mode, old, chng, pos):
-    # Removes or add characters at position
-
-    nm = []
-
-    if mode == 'rm':
-        for x in old:
-            nm.append(x[:int(pos)] + x[int(pos) + int(chng):])
-    elif mode == 'add':
-        for x in old:
-            nm.append(x[:int(pos)] + chng + x[int(pos):])
-
-    return nm
-
-
-def replace(mode, old, bef, aft):
-    # Replace one string to another
-
-    nm = []
-
+def rename_replace(mode, files_names, before, after):
+    """Replace one string to another"""
+    new_names = []
     if mode == 'A':
-        for x in old:
-            nm.append(x.replace(bef, aft))
+        new_names = [name.replace(before, after) for name in files_names]
     elif mode == 'F':
-        for x in old:
-            pos = x.find(bef)
-            tmp = x[pos:pos + len(aft)].replace(bef, aft)
-            nm.append(x[:pos] + tmp + x[pos + 1:])
+        for name in files_names:
+            position = name.find(before)
+            tmp = name[position:position + len(after)].replace(before, after)
+            new_names.append(name[:position] + tmp + name[position + 1:])
     elif mode == 'L':
-        for x in old:
-            pos = x.rfind(bef)
-            tmp = x[pos:pos + len(aft)].replace(bef, aft)
-            nm.append(x[:pos] + tmp + x[pos + 1:])
-
-    return nm
+        for name in files_names:
+            position = name.rfind(before)
+            tmp = name[position:position + len(after)].replace(before, after)
+            new_names.append(name[:position] + tmp + name[position + 1:])
+    return new_names

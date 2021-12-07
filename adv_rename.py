@@ -136,24 +136,22 @@ def main(command, path, mode, arguments):
     files_extensions = [os.path.splitext(path_file)[1] for path_file in path_files]
 
     if command in ("add", "rm"):
-
         if mode == "R":
-            new_names = opr.right(command, files_names, arguments[0])
+            new_names = opr.rename_right(command, files_names, arguments[0])
         elif mode == "L":
-            new_names = opr.left(command, files_names, arguments[0])
+            new_names = opr.rename_left(command, files_names, arguments[0])
         elif mode == "B":
-            new_names = opr.left(command, opr.right(command, files_names, arguments[0]), arguments[0])
+            new_names = opr.rename_left(command, opr.rename_right(command, files_names, arguments[0]), arguments[0])
         elif mode == "P":
-            new_names = opr.position(command, files_names, arguments[0], arguments[1])
-
+            new_names = opr.rename_position(command, files_names, arguments[0], arguments[1])
     elif command == "replace":
+        new_names = opr.rename_replace(mode, files_names, arguments[0], arguments[1])
 
-        new_names = opr.replace(mode, files_names, *arguments)
-
-    new_files = opr.join(new_names, files_extensions)
+    new_files = [name + extension for name, extension in zip(new_names, files_extensions)]
     new_files = [new_file.replace(new_file, path + "\\" + new_file) for new_file in new_files]
 
-    opr.rename(files, new_files)
+    for file, new_file in zip(files, new_files):
+        os.rename(file, new_file)
 
 
 if __name__ == '__main__':
