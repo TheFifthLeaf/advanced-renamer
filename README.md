@@ -1,6 +1,21 @@
-# Advanced Renamer
+<h1 align="center">Advanced Renamer</h1>
 
-Advanced Renamer makes sorting a large number of files much easier.
+<p align="center">The CLI script made with Python for sorting a large number of files much easier.</p>
+
+<p  align="center">
+	<a style="text-decoration:none" href="https://github.com/TheFifthLeaf/advanced-renamer/releases">
+		<img src="https://img.shields.io/github/v/release/TheFifthLeaf/advanced-renamer?color=3C7DD9" alt="Releases">
+	</a>
+	<a style="text-decoration:none" href="https://www.python.org/downloads/">
+		<img src="https://img.shields.io/badge/python-3.6%2B-3C7DD9" alt="Python Version">
+	</a>
+	<a style="text-decoration:none" href="https://choosealicense.com/licenses/gpl-3.0/">
+		<img src="https://img.shields.io/badge/license-GPL%20V3-3C7DD9" alt="License GPLv3">
+	</a>
+	<a href="https://www.codefactor.io/repository/github/thefifthleaf/advanced-renamer">
+		<img src="https://img.shields.io/codefactor/grade/github/TheFifthLeaf/advanced-renamer/main?color=3C7DD9" alt="CodeFactor" />
+	</a>
+</p>
 
 ## Installation
 
@@ -8,76 +23,67 @@ This program uses only the standard Python 3 library, so installing additional m
 
 ## Usage
 
-Run:
+To rename using .exe, please type:
 
 ```bash
-python adv_rename.py
+adv_renamer [--help] {add,rm,replace} [path mode arguments]
 ```
 
-Remove from:
+And using .py, type:
 
 ```bash
-remove [path] [mode] [num_of_chars] [pos_if_pos_mode]
+python adv_renamer.py [--help] {add,rm,replace} [path mode arguments]
 ```
 
-Add to:
+### Usage example
 
+This will display help information. You can also use short "-h".
 ```bash
-add [path] [mode] [string] [pos_if_pos_mode]
+adv_renamer --help
+adv_renamer <command> --help
 ```
-
-Replace:
-
+This will add string "_test_" to the end of the name of the file.
 ```bash
-replace [path] [mode] [old_string] [new_string]
+adv_renamer add "D\RandomFiles" R "_test_"
 ```
-
-For help:
-
+This will remove 6 characters from th end of the name of the file.
 ```bash
-help
+adv_renamer rm "D\RandomFiles" R 6
 ```
-
-For exit:
-
+This will replace all matching strings from the name of the file with new one.
 ```bash
-exit
+adv_renamer replace "D\RandomFiles" A "(1)" "[1]"
 ```
-
-## Available modes
-
-For "remove" and "add":
-
+You can also add and remove characters to/from specific position.
 ```bash
-# Right: -r
-add "D:\Video" -r "-2021"
-remove "D:\Video" -r 5
-
-# Left: -l
-add "D:\Video" -l "april_"
-remove "D:\Video" -l 6
-
-# Both: -b
-add "D:\Video" -b "--"
-remove "D:\Video" -b 2
-
-# Positional: -p
-add "D:\Video" -p "_office_" 7
-remove "D:\Video" -p 8 7
+adv_renamer add "D\RandomFiles" P "_test_" 3
+adv_renamer rm "D\RandomFiles" P 6 3
 ```
-
-For "replace":
-
+If you want use string that start with "-" character, you should use "--" before.
 ```bash
-# All matches: -a
-replace "D:\Video" -a "2020" "2021"
-
-# First match: -f
-replace "D:\Video" -f "." "-"
-
-# Last match: -l
-replace "D:\Video" -f "-" "."
+adv_renamer add "D\RandomFiles" R -- "-test"
+adv_renamer replace "D\RandomFiles" -- "-before" -- "--after"
 ```
+
+## Supported modes
+
+### add/rm
+```bash
+adv_renamer add path mode text <position>
+adv_renamer rm path mode number <position>
+```
+- R (right)
+- L (left)
+- B (both)
+- P (position)
+
+### replace
+```bash
+adv_renamer replace path mode text_before text_after
+```
+- F (first)
+- L (last)
+- A (all)
 
 ## Contributing
 

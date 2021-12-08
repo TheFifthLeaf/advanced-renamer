@@ -8,7 +8,7 @@ import operations as opr
 def parser():
     """Parses given arguments"""
     arg_parser = arps.ArgumentParser(
-        usage="adv-renamer [--help] {add,rm,replace}",
+        usage="adv-renamer [--help] {add,rm,replace} [path mode arguments]",
         description="Advanced Renamer makes sorting a large number of files much easier.",
         epilog="To see more information please use: adv-renamer <command> --help",
     )
