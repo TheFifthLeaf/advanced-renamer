@@ -24,7 +24,7 @@ def parser():
                "R (right)\ttext\n"
                "L (left)\ttext\n"
                "B (both)\ttext\n"
-               "P (position)\ttext number",
+               "P (position)\ttext position",
         formatter_class=arps.RawTextHelpFormatter
     )
     add_parser.add_argument(
@@ -53,10 +53,10 @@ def parser():
         description="Remove number of characters from files names",
         help="Remove number of characters from files names",
         epilog="Modes:\t\tArguments:\n"
-               "R (right)\ttext\n"
-               "L (left)\ttext\n"
-               "B (both)\ttext\n"
-               "P (position)\ttext number",
+               "R (right)\tnumber\n"
+               "L (left)\tnumber\n"
+               "B (both)\tnumber\n"
+               "P (position)\tnumber position",
         formatter_class=arps.RawTextHelpFormatter
     )
     rm_parser.add_argument(
@@ -114,6 +114,13 @@ def parser():
     return (args.command, args.path, args.mode, args.arguments)
 
 
+def check_string(text):
+    """checks if the string contains forbidden in path characters"""
+    forbidden_chars = {'*', ':', '<', '>', '?', '/', '\\', '|', '\"'}
+    if len(forbidden_chars.intersection(text)) > 0:
+        sys.exit("Forbidden chars in the new path")
+
+
 def main(command, path, mode, arguments):
     """The main function of the program that control and performs all the actions."""
 
@@ -130,6 +137,11 @@ def main(command, path, mode, arguments):
 
     if len(path_files) <= 0:
         sys.exit("No files in the path")
+
+    if command == "add":
+        check_string(arguments[0])
+    elif command == "replace":
+        check_string(arguments[1])
 
     files = [path_file.replace(path_file, path + "\\" + path_file) for path_file in path_files]
     files_names = [os.path.splitext(path_file)[0] for path_file in path_files]
