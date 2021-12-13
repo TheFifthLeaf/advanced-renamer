@@ -8,7 +8,7 @@ import operations as opr
 def parser():
     """Parses given arguments"""
     arg_parser = arps.ArgumentParser(
-        usage="adv-renamer [--help] {add,rm,replace} [path mode arguments]",
+        usage=os.path.basename(__file__) + " [--help] {add,rm,replace} [path mode arguments]",
         description="Advanced Renamer makes sorting a large number of files much easier.",
         epilog="To see more information please use: adv-renamer <command> --help",
     )
@@ -17,7 +17,7 @@ def parser():
     )
     add_parser = subparsers.add_parser(
         "add",
-        usage="adv-renamer add [--help] [path mode arguments]",
+        usage=f"{os.path.basename(__file__)} add [--help] [path mode arguments]",
         description="Add given text to files names",
         help="Add given text to files names",
         epilog="Modes:\t\tArguments:\n"
@@ -49,7 +49,7 @@ def parser():
     )
     rm_parser = subparsers.add_parser(
         "rm",
-        usage="adv-renamer rm [--help] [path mode arguments]",
+        usage=f"{os.path.basename(__file__)} rm [--help] [path mode arguments]",
         description="Remove number of characters from files names",
         help="Remove number of characters from files names",
         epilog="Modes:\t\tArguments:\n"
@@ -81,7 +81,7 @@ def parser():
     )
     replace_parser = subparsers.add_parser(
         "replace",
-        usage="adv-renamer replace [--help] [path mode arguments]",
+        usage=f"{os.path.basename(__file__)} replace [--help] [path mode arguments]",
         description="Replace old string with the new one in files names",
         help="Replace old string with the new one in files names",
         epilog="Modes:\t\tArguments:\n"
